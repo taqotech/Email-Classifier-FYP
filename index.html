@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Email Spam Classifier ✨</title>
+    <!-- Include Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Particles.js for background animation -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <!-- Include Google Fonts for whimsical typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Apply custom fonts and reset default margins/paddings */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Style the particle background container */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6b48ff 0%, #ff6f91 50%, #ffd700 100%);
+            z-index: -1;
+        }
+
+        /* Holographic card effect */
+        .holo-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .holo-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Holographic sheen effect on card */
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 1s;
+        }
+
+        .holo-card:hover::before {
+            left: 100%;
+        }
+
+        /* Magical button with pulsating glow */
+        .magic-button {
+            background: linear-gradient(45deg, #ff6f91, #ffd700);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px rgba(255, 111, 145, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            }
+
+            100% {
+                box-shadow: 0 0 10px rgba(255, 111, 145, 0.5);
+            }
+        }
+
+        .magic-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 111, 145, 0.6);
+        }
+
+        /* Ripple effect on button click */
+        .magic-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .magic-button:hover::before {
+            left: 100%;
+        }
+
+        /* Textarea styling with glow on focus */
+        textarea {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        textarea:focus {
+            box-shadow: 0 0 15px rgba(255, 111, 145, 0.4);
+            border-color: #ffd700;
+        }
+
+        /* Slide-in animation for result */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        /* Result card with magical glow */
+        .result-card {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '✨';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            animation: sparkle 1.5s infinite;
+        }
+
+        @keyframes sparkle {
+            0% {
+                opacity: 0;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+
+        /* Loading animation with magical sparkles */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        /* Ensure header text is visible with high contrast and shadow */
+        .header-text {
+            color: #ffffff;
+            /* Solid white for visibility */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            /* Subtle shadow for contrast */
+        }
+
+        /* Ensure prediction text is visible with high contrast and shadow */
+        .prediction-text {
+            color: white;
+            /* Solid white for visibility */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            /* Subtle shadow for contrast */
+        }
+
+        /* Color-coded prediction result with shadow */
+        .prediction-result {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            /* Subtle shadow for contrast */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Particle background container -->
+    <div id="particles-js"></div>
+    <!-- Main container for the UI -->
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class="holo-card p-8 w-full max-w-md">
+            <!-- Heading with improved visibility -->
+            <h1 class="text-4xl font-bold text-center mb-8 header-text" style="font-family: 'Playfair Display', serif;">
+                ✨ Email Spam Classifier ✨
+            </h1>
+            <!-- Input section for email text -->
+            <div class="mb-6">
+                <label for="email" class="block text-sm font-medium text-white mb-2">
+                    Enter Your Email Text:
+                </label>
+                <textarea id="email" rows="6" class="w-full p-3 rounded-lg placeholder-gray-300"
+                    placeholder="Type or paste your email here..."></textarea>
+            </div>
+            <!-- Button to trigger prediction -->
+            <button onclick="predictSpam()" class="magic-button w-full text-white py-3 rounded-lg font-semibold">
+                Cast the Spell 🪄
+            </button>
+            <!-- Container for displaying prediction results -->
+            <div id="result" class="mt-6"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Particles.js for background animation with colorful particles
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 100, density: { enable: true, value_area: 800 } },
+                color: { value: ['#ff6f91', '#ffd700', '#6b48ff', '#ff9ff3'] }, /* Multi-colored particles */
+                shape: {
+                    type: 'star',
+                    stroke: { width: 0, color: '#000000' },
+                },
+                opacity: {
+                    value: 0.7,
+                    random: true,
+                    anim: { enable: true, speed: 1, opacity_min: 0.3, sync: false }
+                },
+                size: {
+                    value: 4,
+                    random: true,
+                    anim: { enable: true, speed: 3, size_min: 0.5, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffffff',
+                    opacity: 0.3,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 3,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'bubble' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                },
+                modes: {
+                    bubble: { distance: 200, size: 6, duration: 2, opacity: 0.8 },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Async function to send email text to server and display results
+        async function predictSpam() {
+            const emailText = document.getElementById('email').value;
+            const resultDiv = document.getElementById('result');
+
+            // Validate input
+            if (!emailText.trim()) {
+                resultDiv.innerHTML = '<p class="text-red-400 font-medium text-center slide-in">Please enter an email text.</p>';
+                return;
+            }
+
+            // Show loading state with spinner
+            resultDiv.innerHTML = '<div class="flex justify-center"><div class="spinner"></div></div>';
+
+            try {
+                // Send POST request to the /predict endpoint
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: emailText })
+                });
+
+                // Check if response is OK
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    resultDiv.innerHTML = `<p class="text-red-400 font-medium text-center slide-in">Error: ${errorData.error}</p>`;
+                    return;
+                }
+
+                // Parse the JSON response
+                const data = await response.json();
+
+                // Determine result color based on prediction
+                const predictionColor = data.prediction === 'Spam' ? 'text-red-400' : 'text-green-400';
+
+                // Display prediction and probabilities in a styled card with improved visibility
+                resultDiv.innerHTML = `
+                    <div class="result-card p-5 rounded-lg slide-in">
+                        <p class="text-xl font-semibold text-center ${predictionColor} prediction-result">
+                            Prediction: ${data.prediction}
+                        </p>
+                        <p class="prediction-text text-center mt-2">
+                            Spam Probability: ${(data.probability_spam * 100).toFixed(2)}%
+                        </p>
+                        <p class="prediction-text text-center">
+                            Not Spam Probability: ${(data.probability_not_spam * 100).toFixed(2)}%
+                        </p>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = '<p class="text-red-400 font-medium text-center slide-in">Error: Could not connect to the server.</p>';
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
